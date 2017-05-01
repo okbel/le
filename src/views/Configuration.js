@@ -1,13 +1,30 @@
 import React, {Component} from 'react';
 
 class Configuration extends Component {
-  render() {
-    const state = this.props.route.getState('configuration');
+  handleClick = () => {
+    this.props.updateState(state => ({
+      ...state,
+      configuration: {
+        ...state.configuration,
+        showUsers: !state.configuration.showUsers
+      }
+    }));
+  };
 
+  render() {
+    const {configuration, users} = this.props.getState();
+    const {showUsers} = configuration;
     return (
       <div className="Configuration">
         <h1>Configuration</h1>
-        Config? {state.config ? 'true' : null}
+        <button onClick={this.handleClick}>
+          {!showUsers ? 'Show Users' : 'Hide Users'}
+        </button>
+        {showUsers
+          ? <div>
+              {users.map((user, i) => <li key={i}>{user}</li>)}
+            </div>
+          : null}
       </div>
     );
   }

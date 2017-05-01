@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
-import {Router, Route, browserHistory} from 'react-router';
+import {BrowserRouter as Router, Route, Link} from 'react-router-dom';
 
-import Main from './Main';
 import Users from './views/Users';
 import Configuration from './views/Configuration';
 
@@ -12,29 +11,62 @@ class App extends Component {
     this.state = {
       users: ['lele', 'bel'],
       configuration: {
+        showUsers: false,
         config: true
       }
     };
   }
 
-  getState = state => {
-    return this.state[state];
+  getState = (stateKey = '') => {
+    const isStateKey = this.state.hasOwnProperty(stateKey);
+
+    if (isStateKey) {
+      return this.state[stateKey];
+    } else {
+      return this.state;
+    }
   };
 
-  setState = newState => {
-    this.setState(state => newState);
+  updateState = (cb = () => {}) => {
+    this.setState(cb);
   };
 
   render() {
     return (
-      <div>
-        <Router history={browserHistory}>
-          <Route path="/" component={Main}>
-            <Route path="users" component={Users} getState={this.getState} setState={this.setState} />
-            <Route path="configuration" component={Configuration} getState={this.getState} setState={this.setState} />
-          </Route>
-        </Router>
-      </div>
+      <Router>
+        <div>
+          <ul>
+            <li><Link to="/">Main</Link></li>
+            <li><Link to="/users">Users</Link></li>
+            <li><Link to="/configuration">Configuration</Link></li>
+          </ul>
+
+          <hr />
+
+          <Route
+            exact
+            path="/"
+            render={() => (
+              <Users getState={this.getState} updateState={this.updateState} />
+            )}
+          />
+          <Route
+            path="/users"
+            render={() => (
+              <Users getState={this.getState} updateState={this.updateState} />
+            )}
+          />
+          <Route
+            path="/configuration"
+            render={() => (
+              <Configuration
+                getState={this.getState}
+                updateState={this.updateState}
+              />
+            )}
+          />
+        </div>
+      </Router>
     );
   }
 }
